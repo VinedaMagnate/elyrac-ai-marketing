@@ -1,0 +1,2 @@
+import {authenticityCheck} from "@/lib/authenticity";
+export function evaluateCampaign(texts:string[]){const results=texts.map(authenticityCheck);const score=Math.round(results.reduce((a,r)=>a+r.score,0)/Math.max(results.length,1));return {score,passed:score>=80,flags:[...new Set(results.flatMap(r=>r.flags))],brandSpecificityRequired:true,evidenceRequired:true};}
