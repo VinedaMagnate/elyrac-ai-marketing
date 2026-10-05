@@ -1,0 +1,7 @@
+create extension if not exists "pgcrypto";
+create table if not exists campaigns(id uuid primary key default gen_random_uuid(),title text not null,objective text,audience text,pillar text,status text not null default 'draft',scheduled_at timestamptz,created_at timestamptz not null default now());
+create table if not exists content_variants(id uuid primary key default gen_random_uuid(),campaign_id uuid references campaigns(id) on delete cascade,platform text not null,content text not null,status text not null default 'draft',created_at timestamptz not null default now());
+create table if not exists trend_signals(id uuid primary key default gen_random_uuid(),headline text not null,source_url text,relevance int,elyrac_angle text,detected_at timestamptz not null default now());
+create table if not exists brand_rules(id uuid primary key default gen_random_uuid(),rule text not null,source text not null default 'system',active boolean not null default true,created_at timestamptz not null default now());
+create table if not exists approval_feedback(id uuid primary key default gen_random_uuid(),campaign_id uuid references campaigns(id) on delete cascade,decision text not null,feedback text,created_at timestamptz not null default now());
+create table if not exists analytics_events(id uuid primary key default gen_random_uuid(),campaign_id uuid references campaigns(id) on delete cascade,platform text,event_type text,value numeric,recorded_at timestamptz not null default now());
