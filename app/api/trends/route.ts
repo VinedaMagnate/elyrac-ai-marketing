@@ -1,0 +1,2 @@
+import {NextResponse} from "next/server";
+export async function GET(){return NextResponse.json({status:"source-connectors-required",message:"Trend intelligence accepts verified external sources only. Live news/search ingestion will be connected separately; no synthetic breaking news is generated.",signals:[]});}
