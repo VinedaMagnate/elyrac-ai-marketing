@@ -1,0 +1,2 @@
+const generic=[/in today's (fast-paced|rapidly evolving)/i,/unlock the power of/i,/revolutioniz(e|ing)/i,/game[- ]changer/i,/🚀/];
+export function authenticityCheck(text:string){const hits=generic.filter(r=>r.test(text)).length;const score=Math.max(0,100-hits*12);return {score,passed:score>=80,flags:generic.filter(r=>r.test(text)).map(String)};}
