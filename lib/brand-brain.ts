@@ -1,0 +1,3 @@
+import {elyracBrand} from "@/lib/brand";import {serverDb} from "@/lib/supabase/server";
+export async function getBrandBrain(){const db=serverDb();const [{data:rules},{data:evidence}]=await Promise.all([db.from("brand_rules").select("*").eq("active",true).order("created_at"),db.from("brand_evidence").select("*").eq("approved",true).order("created_at",{ascending:false}).limit(50)]);return {core:elyracBrand,rules:rules??[],evidence:evidence??[]};}
+export async function learnFromFeedback(feedback:string){const db=serverDb();return db.from("brand_rules").insert({rule:feedback,source:"ceo-feedback",active:true}).select().single();}
