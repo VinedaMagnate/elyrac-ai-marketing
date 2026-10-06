@@ -7,7 +7,7 @@ export async function authenticatedActor(){
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
  if(!url||!key)throw new AuthError("Application authentication is not configured",503);
  const store=await cookies();
- const supabase=createServerClient(url,key,{cookies:{getAll:()=>store.getAll(),setAll:(items)=>{for(const {name,value,options} of items){try{store.set(name,value,options)}catch{}}}}});
+ const supabase=createServerClient(url,key,{cookies:{getAll:()=>store.getAll(),setAll:(items:{name:string;value:string;options?:Record<string,unknown>}[])=>{for(const {name,value,options} of items){try{store.set(name,value,options)}catch{}}}}});
  const {data:{user},error}=await supabase.auth.getUser();
  if(error||!user)throw new AuthError("Authenticated user required",401);
  const email=user.email?.trim().toLowerCase();
