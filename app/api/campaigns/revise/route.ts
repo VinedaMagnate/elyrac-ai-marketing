@@ -28,13 +28,7 @@ export async function POST(req:Request){
     await db.from("campaigns").update({authenticity_score:check.score,authenticity_passed:false,status:"revision_requested"}).eq("id",campaignId);
     return NextResponse.json({error:"Revised campaign still fails authenticity gate",authenticity:check,status:"revision_requested",publishTriggered:false},{status:422});
   }
-  for(const v of c.content_variants||[]){
-    if(revised.variants[v.platform]){
-      const {error:vError}=await db.from("content_variants").update({content:String(revised.variants[v.platform]),status:"revised"}).eq("id",v.id);
-      if(vError)return NextResponse.json({error:vError.message},{status:500});
-    }
-  }
-  const {error:updateError}=await db.from("campaigns").update({creative_direction:revised.creativeDirection??c.creative_direction,video_direction:revised.videoDirection??c.video_direction,authenticity_score:check.score,authenticity_passed:true,status:"pending_approval"}).eq("id",campaignId);
-  if(updateError)return NextResponse.json({error:updateError.message},{status:500});
-  return NextResponse.json({campaignId,authenticity:check,status:"pending_approval",publishTriggered:false});
+  const {data:updated,error:updateError}=await db.rpc("apply_campaign_revision",{p_campaign_id:campaignId,p_variants:revised.variants,p_creative_direction:revised.creativeDirection??null,p_video_direction:revised.videoDirection??null,p_authenticity_score:check.score});
+  if(updateError){const conflict=/not awaiting revision|not found/i.test(updateError.message);return NextResponse.json({error:updateError.message},{status:conflict?409:500});}
+  return NextResponse.json({campaign:updated,authenticity:check,status:"pending_approval",publishTriggered:false});
 }
