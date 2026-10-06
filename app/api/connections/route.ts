@@ -1,0 +1,2 @@
+import {NextResponse} from "next/server";import {serverDb} from "@/lib/supabase/server";
+export async function GET(){const db=serverDb();const {data,error}=await db.from("social_connections").select("platform,status,account_label,scopes,publishing_enabled,analytics_enabled,last_verified_at,last_error").order("platform");return error?NextResponse.json({error:error.message},{status:500}):NextResponse.json({connections:data??[]});}
