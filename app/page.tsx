@@ -1,1 +1,1 @@
-import AppShell from "@/components/AppShell";export default function Home(){return <AppShell/>}
+import {Suspense} from "react";import AppShell from "@/components/AppShell";export default function Home(){return <Suspense fallback={<main><section><div className="panel">Loading Elyrac AI Marketing…</div></section></main>}><AppShell/></Suspense>}
