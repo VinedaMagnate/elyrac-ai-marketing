@@ -1,0 +1,1 @@
+import {NextResponse} from "next/server";export async function POST(){return NextResponse.json({error:"Publishing is intentionally disabled in V1 foundation. Scheduling does not publish. Platform connectors and an explicit publish authorization gate must be implemented first."},{status:501})}
