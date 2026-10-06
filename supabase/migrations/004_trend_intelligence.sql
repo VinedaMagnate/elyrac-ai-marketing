@@ -1,0 +1,10 @@
+alter table trend_signals add column if not exists source_name text;
+alter table trend_signals add column if not exists published_at timestamptz;
+alter table trend_signals add column if not exists summary text;
+alter table trend_signals add column if not exists category text;
+alter table trend_signals add column if not exists business_implication text;
+alter table trend_signals add column if not exists shelf_life text;
+alter table trend_signals add column if not exists verified boolean not null default false;
+create unique index if not exists trend_signals_source_url_unique on trend_signals(source_url) where source_url is not null;
+create index if not exists trend_signals_relevance_idx on trend_signals(relevance desc);
+create index if not exists trend_signals_published_idx on trend_signals(published_at desc);
