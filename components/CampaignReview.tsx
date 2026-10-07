@@ -1,7 +1,7 @@
 "use client";
 import {useState} from "react";
 
-const text=(v:any)=>v==null?"":typeof v==="string"?v:JSON.stringify(v,null,2);
+const parse=(v:any)=>{if(typeof v!=="string")return v;const s=v.trim();if(!(s.startsWith("{")||s.startsWith("[")))return v;try{return JSON.parse(s)}catch{return v}};\nconst text=(v:any)=>{const p=parse(v);return p==null?"":typeof p==="string"?p:JSON.stringify(p,null,2)};
 const normalizeVariant=(v:any)=>{
  if(typeof v==="string")return {copy:v};
  if(!v||typeof v!=="object")return {copy:String(v??"")};
@@ -10,7 +10,7 @@ const normalizeVariant=(v:any)=>{
 const label=(s:string)=>s.replace(/([A-Z])/g," $1").replace(/_/g," ").replace(/^./,x=>x.toUpperCase());
 
 export default function CampaignReview({result,onSaved}:{result:any,onSaved?:()=>void}){
- const initial={...result.draft,variants:Object.fromEntries(Object.entries(result.draft?.variants||{}).map(([k,v])=>[k,normalizeVariant(v)]))};
+ const initial={...result.draft,creativeDirection:parse(result.draft?.creativeDirection),videoDirection:parse(result.draft?.videoDirection),variants:Object.fromEntries(Object.entries(result.draft?.variants||{}).map(([k,v])=>[k,normalizeVariant(v)]))};
  const [draft,setDraft]=useState(initial),[saving,setSaving]=useState(false),[message,setMessage]=useState("");
  if(!draft)return null;
  const updateCopy=(platform:string,value:string)=>setDraft((d:any)=>({...d,variants:{...d.variants,[platform]:{...d.variants[platform],copy:value}}}));
