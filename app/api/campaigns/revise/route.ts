@@ -1,7 +1,8 @@
-import OpenAI from "openai";import {NextResponse} from "next/server";import {serverDb} from "@/lib/supabase/server";import {getBrandBrain,brandBrainPrompt} from "@/lib/brand-brain";import {evaluateCampaign} from "@/lib/agents/authenticity";
+import OpenAI from "openai";import {authenticatedActor,authErrorStatus} from "@/lib/auth/server-user";import {NextResponse} from "next/server";import {serverDb} from "@/lib/supabase/server";import {getBrandBrain,brandBrainPrompt} from "@/lib/brand-brain";import {evaluateCampaign} from "@/lib/agents/authenticity";
 const ai=process.env.OPENAI_API_KEY?new OpenAI({apiKey:process.env.OPENAI_API_KEY}):null;
 
 export async function POST(req:Request){
+  try{const actor=await authenticatedActor();
   if(!ai)return NextResponse.json({error:"OPENAI_API_KEY is not configured"},{status:503});
   const {campaignId}=await req.json();
   if(!campaignId)return NextResponse.json({error:"campaignId is required"},{status:400});
@@ -30,5 +31,6 @@ export async function POST(req:Request){
   }
   const {data:updated,error:updateError}=await db.rpc("apply_campaign_revision",{p_campaign_id:campaignId,p_variants:revised.variants,p_creative_direction:revised.creativeDirection??null,p_video_direction:revised.videoDirection??null,p_authenticity_score:check.score});
   if(updateError){const conflict=/not awaiting revision|not found/i.test(updateError.message);return NextResponse.json({error:updateError.message},{status:conflict?409:500});}
-  return NextResponse.json({campaign:updated,authenticity:check,status:"pending_approval",publishTriggered:false});
+  return NextResponse.json({campaign:updated,authenticity:check,status:"pending_approval",publishTriggered:false,actor});
+  }catch(e){return NextResponse.json({error:e instanceof Error?e.message:"Campaign revision failed"},{status:authErrorStatus(e)})}
 }
