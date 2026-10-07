@@ -1,7 +1,8 @@
 "use client";
 import {useState} from "react";
 
-const parse=(v:any)=>{if(typeof v!=="string")return v;const s=v.trim();if(!(s.startsWith("{")||s.startsWith("[")))return v;try{return JSON.parse(s)}catch{return v}};\nconst text=(v:any)=>{const p=parse(v);return p==null?"":typeof p==="string"?p:JSON.stringify(p,null,2)};
+const parse=(v:any)=>{if(typeof v!=="string")return v;const s=v.trim();if(!(s.startsWith("{")||s.startsWith("[")))return v;try{return JSON.parse(s)}catch{return v}};
+const text=(v:any)=>{const p=parse(v);return p==null?"":typeof p==="string"?p:JSON.stringify(p,null,2)};
 const normalizeVariant=(v:any)=>{
  if(typeof v==="string")return {copy:v};
  if(!v||typeof v!=="object")return {copy:String(v??"")};
