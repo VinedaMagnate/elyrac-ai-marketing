@@ -1,0 +1,1 @@
+import type {TrendSignal} from "./types";export function rankSignals(signals:TrendSignal[]){return [...signals].filter(s=>s.verified&&/^https?:\/\//.test(s.sourceUrl)).sort((a,b)=>b.relevance-a.relevance||Date.parse(b.publishedAt)-Date.parse(a.publishedAt));}

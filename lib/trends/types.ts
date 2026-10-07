@@ -1,0 +1,1 @@
+export type TrendSignal={id?:string;headline:string;sourceName:string;sourceUrl:string;publishedAt:string;summary:string;category:string;relevance:number;elyracAngle:string;businessImplication:string;shelfLife:"breaking"|"trending"|"evergreen";verified:boolean};

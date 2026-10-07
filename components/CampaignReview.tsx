@@ -1,0 +1,9 @@
+"use client";
+import {useState} from "react";
+export default function CampaignReview({result,onSaved}:{result:any,onSaved?:()=>void}){
+ const [draft,setDraft]=useState(result.draft);const [saving,setSaving]=useState(false);const [message,setMessage]=useState("");
+ if(!draft)return null;
+ const update=(platform:string,value:string)=>setDraft((d:any)=>({...d,variants:{...d.variants,[platform]:value}}));
+ const save=async()=>{setSaving(true);const r=await fetch("/api/campaigns",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({title:draft.brief?.topic||"Untitled campaign",objective:draft.brief?.objective,audience:draft.brief?.audience,pillar:draft.brief?.pillar,sourceEvidence:draft.brief?.sourceEvidence||[],variants:draft.variants,creativeDirection:draft.creativeDirection,videoDirection:draft.videoDirection})});const data=await r.json();setMessage(r.ok?"Saved to Approval Inbox":data.error||"Could not save");setSaving(false);if(r.ok)onSaved?.();};
+ return <article className="panel review"><div className="row"><div><span className="pill">CAMPAIGN REVIEW</span><h2>{draft.brief?.topic}</h2></div><span className={result.authenticity?.passed?"ready":"warning"}>{result.authenticity?.score??0}/100 authenticity</span></div><p className="lead">{draft.brief?.elyracAngle}</p><div className="variantGrid">{Object.entries(draft.variants||{}).map(([platform,content])=><div className="variant" key={platform}><b>{platform}</b><textarea rows={9} value={String(content)} onChange={e=>update(platform,e.target.value)}/></div>)}</div><h3>Creative direction</h3><p>{draft.creativeDirection}</p><h3>Video direction</h3><p>{draft.videoDirection}</p><div className="actions"><button className="primary" disabled={saving} onClick={save}>{saving?"Saving…":"Send to Approval Inbox"}</button><span>{message}</span></div></article>;
+}

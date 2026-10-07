@@ -1,0 +1,2 @@
+import {NextResponse} from "next/server";import {serverDb} from "@/lib/supabase/server";
+export async function GET(_req:Request,{params}:{params:Promise<{id:string}>}){const {id}=await params;const db=serverDb();const {data,error}=await db.from("publish_audit_events").select("id,event_type,actor,details,created_at").eq("publish_job_id",id).order("created_at",{ascending:true});return error?NextResponse.json({error:error.message},{status:500}):NextResponse.json({events:data??[]});}
